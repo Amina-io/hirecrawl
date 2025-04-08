@@ -1,0 +1,4 @@
+[theme]
+base="light"
+[tool.poetry.scripts]
+hirecrawl = "hirecrawl.hirecrawl:main"
