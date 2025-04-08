@@ -41,6 +41,8 @@ classifiers = [
 dependencies = [
     "dotenv>=0.9.9",
     "firecrawl>=1.15.0",
+    "openai>=1.71.0",
+    "streamlit>=1.44.1",
 ]
 
 

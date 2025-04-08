@@ -53,21 +53,40 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-def make_firecrawl_request(prompt, urls=None, crawl_depth=1):
+def make_firecrawl_request(prompt, urls=None):
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
-    data = {"prompt": prompt, "crawl_depth": crawl_depth}
-    if urls:
-        data["urls"] = urls
 
-    response = requests.post("https://api.firecrawl.dev/v1/research", headers=headers, json=data)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"API Error {response.status_code}: {response.text}")
+    if not urls:
+        st.error("❌ No URL provided for Firecrawl.")
         return None
+
+    data = {
+        "url": urls[0],
+        "formats": ["json"],
+        "jsonOptions": {
+            "prompt": prompt.strip()
+        }
+    }
+
+    st.info("📡 Sending request to Firecrawl...")
+    st.code(json.dumps(data, indent=2))  # Optional: shows request data
+
+    try:
+        response = requests.post("https://api.firecrawl.dev/v1/scrape", headers=headers, json=data)
+        st.code(f"Response status: {response.status_code}")
+        if response.status_code == 200:
+            return response.json().get("data", {}).get("json", {})
+        else:
+            st.error(f"API Error {response.status_code}: {response.text}")
+            return None
+    except Exception as e:
+        st.error(f"🔥 Exception calling Firecrawl: {e}")
+        return None
+
+
 
 def analyze_linkedin_profile(linkedin_url):
     prompt = """
